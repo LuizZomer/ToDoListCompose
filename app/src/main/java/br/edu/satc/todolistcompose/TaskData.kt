@@ -12,26 +12,35 @@ import androidx.room.RoomDatabase
 import androidx.room.Update
 
 @Entity
-data class Task(
+data class TaskData (
     @PrimaryKey(autoGenerate = true) val uid: Int,
-    @ColumnInfo(name = "title") val title: String,
-    @ColumnInfo(name = "description") val description: String,
-    @ColumnInfo(name = "complete") val complete: Boolean
+    @ColumnInfo(name = "title")
+    val title: String,
+    @ColumnInfo(name = "description")
+    val description: String,
+    @ColumnInfo(name = "complete")
+    val complete: Boolean
 )
 
 @Dao
 interface TaskDao {
-    @Query("SELECT * FROM task")
-    fun getAll(): List<Task>
+    @Query("SELECT * FROM taskData")
+    fun getAll(): List<TaskData>
+
+    @Query("SELECT * FROM taskData WHERE uid IN (:userIds)")
+    fun loadAllByIds(userIds: IntArray): List<TaskData>
+
+    @Update
+    fun updateAll(vararg  taks: TaskData)
 
     @Insert
-    fun insertAll(vararg task: Task)
+    fun insertAll(vararg tasks: TaskData)
 
     @Delete
-    fun delete(user: Task)
+    fun delete(tasks: TaskData);
 }
 
-@Database(entities = [Task::class], version = 1)
+@Database(entities = [TaskData::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
 }
